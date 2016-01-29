@@ -146,11 +146,19 @@ namespace Orleans.Messaging
         public void PrepareToStop()
         {
             // put any pre stop logic here.
+            //PendingInboundMessages.CompleteAdding();
         }
 
         public void Stop()
         {
             Running = false;
+
+            Utils.SafeExecute(() =>
+            {
+                PendingInboundMessages.CompleteAdding();
+                PendingInboundMessages.Dispose();
+            });
+
 
             if (StatisticsCollector.CollectQueueStats)
             {
@@ -309,6 +317,12 @@ namespace Orleans.Messaging
         {
             try
             {
+                if (ct.IsCancellationRequested)
+                {
+                    return null;
+                }
+
+                // Don't pass CancellationToken to Take. It causes too much spinning.
                 Message msg = PendingInboundMessages.Take();
 #if TRACK_DETAILED_STATS
                 if (StatisticsCollector.CollectQueueStats)

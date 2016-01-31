@@ -36,6 +36,10 @@ if EXIST "%VERSION%" (
     GOTO Usage
 )
 
+set VERSION=%PRODUCT_VERSION%
+
+
+
 if not "%VERSION_BETA%" == "" ( set VERSION=%VERSION%-%VERSION_BETA% )
 
 @echo VERSION_BETA=%VERSION_BETA%

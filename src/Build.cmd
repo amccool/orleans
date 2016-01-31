@@ -13,11 +13,12 @@ SET VERSION_FILE=%CMDHOME%\Build\Version.txt
 
 if EXIST "%VERSION_FILE%" (
     @Echo Using version number from file %VERSION_FILE%
-    FOR /F "usebackq tokens=1,2,3,4 delims=." %%i in (`type "%VERSION_FILE%"`) do set PRODUCT_VERSION=%%i.%%j.%%k
+REM    FOR /F "usebackq tokens=1,2,3,4 delims=." %%i in (`type "%VERSION_FILE%"`) do set PRODUCT_VERSION=%%i.%%j.%%k
 	@Echo PRODUCT_VERSION=%PRODUCT_VERSION%
 ) else (
     @Echo ERROR: Unable to read version number from file %VERSION_FILE%
-    SET PRODUCT_VERSION=1.0
+REM    SET PRODUCT_VERSION=1.0
+    @Echo version from environment PRODUCT_VERSION = %PRODUCT_VERSION%
 )
 
 if "%builduri%" == "" set builduri=Build.cmd

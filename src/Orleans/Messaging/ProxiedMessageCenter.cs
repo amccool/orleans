@@ -146,7 +146,6 @@ namespace Orleans.Messaging
         public void PrepareToStop()
         {
             // put any pre stop logic here.
-            //PendingInboundMessages.CompleteAdding();
         }
 
         public void Stop()
@@ -156,9 +155,7 @@ namespace Orleans.Messaging
             Utils.SafeExecute(() =>
             {
                 PendingInboundMessages.CompleteAdding();
-                PendingInboundMessages.Dispose();
             });
-
 
             if (StatisticsCollector.CollectQueueStats)
             {
@@ -332,16 +329,26 @@ namespace Orleans.Messaging
 #endif
                 return msg;
             }
-            catch (ThreadAbortException tae)
+            catch (ThreadAbortException exc)
             {
                 // Silo may be shutting-down, so downgrade to verbose log
-                logger.Verbose(ErrorCode.ProxyClient_ThreadAbort, "Received thread abort exception -- exiting. {0}", tae);
+                logger.Verbose(ErrorCode.ProxyClient_ThreadAbort, "Received thread abort exception -- exiting. {0}", exc);
                 Thread.ResetAbort();
                 return null;
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException exc)
             {
-                logger.Verbose(ErrorCode.ProxyClient_OperationCancelled, "Received operation cancelled exception -- exiting. {0}", oce);
+                logger.Verbose(ErrorCode.ProxyClient_OperationCancelled, "Received operation cancelled exception -- exiting. {0}", exc);
+                return null;
+            }
+            catch (ObjectDisposedException exc)
+            {
+                logger.Verbose(ErrorCode.ProxyClient_ReceiveError, "Received Object Disposed exception -- exiting. {0}", exc);
+                return null;
+            }
+            catch (InvalidOperationException exc)
+            {
+                logger.Verbose(ErrorCode.ProxyClient_ReceiveError, "Received Invalid Operation exception -- exiting. {0}", exc);
                 return null;
             }
             catch (Exception ex)

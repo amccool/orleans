@@ -36,10 +36,15 @@ if EXIST "%VERSION%" (
     GOTO Usage
 )
 
+
+set VERSION=%PRODUCT_VERSION%
+
+
 if not "%VERSION_BETA%" == "" ( set VERSION=%VERSION%-%VERSION_BETA% )
 
 @echo VERSION_BETA=%VERSION_BETA%
 @echo VERSION=%VERSION%
+
 
 @echo CreateOrleansNugetPackages: Version = %VERSION% -- Drop location = %BASE_PATH% -- SRC_DIR=%SRC_DIR%
 

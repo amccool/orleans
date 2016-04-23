@@ -77,6 +77,11 @@ SET OutDir=%CMDHOME%\..\Binaries\%CONFIGURATION%
 @if ERRORLEVEL 1 GOTO :ErrorStop
 @echo BUILD ok for %CONFIGURATION% %PROJ%
 
+
+@GOTO :BuildFinished
+
+
+
 set STEP=VSIX
 
 if "%VSSDK140Install%" == "" (

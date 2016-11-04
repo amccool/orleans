@@ -50,38 +50,11 @@ namespace UnitTests.StorageTests
                     options.ClusterConfiguration.Globals.RegisterStorageProvider<Orleans.Storage.DynamoDBStorageProvider>("DDBStore1", new Dictionary<string, string> { { "DataConnectionString", "Service=http://localhost:8000" } });
                     options.ClusterConfiguration.Globals.RegisterStorageProvider<Orleans.Storage.DynamoDBStorageProvider>("DDBStore2", new Dictionary<string, string> { { "DataConnectionString", "Service=http://localhost:8000" } });
                     options.ClusterConfiguration.Globals.RegisterStorageProvider<Orleans.Storage.DynamoDBStorageProvider>("DDBStore3", new Dictionary<string, string> { { "DataConnectionString", "Service=http://localhost:8000" } });
-                    options.ClusterConfiguration.Globals.RegisterStorageProvider<Orleans.Storage.ShardedStorageProvider>("ShardedDDBStore");
+                    options.ClusterConfiguration.AddShardedStorageProvider("ShardedDDBStore", new string[] { "DDBStore1", "DDBStore2", "DDBStore3" });
 
-                    //< Provider Name = "DDBStore1" />
-                    //< Provider Name = "DDBStore2" />
-                    //< Provider Name = "DDBStore3" />
-                    IProviderConfiguration providerConfig;
-                    if(options.ClusterConfiguration.Globals.TryGetProviderConfiguration("Orleans.Storage.ShardedStorageProvider", "ShardedDDBStore", out providerConfig))
-                    {
-                        var providerCategoriess = options.ClusterConfiguration.Globals.ProviderConfigurations;
-
-                        var providers = providerCategoriess.SelectMany(o => o.Value.Providers);
-
-                        IProvider provider1 = GetNamedProviderForShardedProvider(providers, "DDBStore1");
-                        IProvider provider2 = GetNamedProviderForShardedProvider(providers, "DDBStore2");
-                        IProvider provider3 = GetNamedProviderForShardedProvider(providers, "DDBStore3");
-                        providerConfig.Children.Add(provider1);
-                        providerConfig.Children.Add(provider2);
-                        providerConfig.Children.Add(provider3);
-                    }
                     return new TestCluster(options);
                 }
                 return null;
-            }
-
-            private static IProvider GetNamedProviderForShardedProvider(IEnumerable<KeyValuePair<string, IProviderConfiguration>> providers, string providerName)
-            {
-                var ddbStore1 = providers.Where(o => o.Key.Equals(providerName)).Select(o => o.Value);
-
-                var pm = ddbStore1.First();
-
-                var provider = ((ProviderConfiguration) pm).ProviderManager.GetProvider(providerName);
-                return provider;
             }
         }
 

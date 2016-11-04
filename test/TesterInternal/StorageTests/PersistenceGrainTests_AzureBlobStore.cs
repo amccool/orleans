@@ -30,8 +30,6 @@ namespace UnitTests.StorageTests
         {
             protected override TestCluster CreateTestCluster()
             {
-                TestUtils.CheckForAzureStorage();
-
                 Guid serviceId = Guid.NewGuid();
                 var options = new TestClusterOptions(initialSilosCount: 1);
 
@@ -40,7 +38,6 @@ namespace UnitTests.StorageTests
                 options.ClusterConfiguration.ApplyToAllNodes(n => n.MaxActiveThreads = 0);
                 options.ClusterConfiguration.Globals.MaxResendCount = 0;
 
-                //options.ClusterConfiguration.Globals.DataConnectionString = TestDefaultConfiguration.DataConnectionString;
                 options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.MockStorageProvider>("test1");
                 options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.MockStorageProvider>("test2", new Dictionary<string, string> { { "Config1", "1" }, { "Config2", "2" } });
                 options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.ErrorInjectionStorageProvider>("ErrorInjector");
@@ -51,42 +48,10 @@ namespace UnitTests.StorageTests
                 options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore1");
                 options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore2");
                 options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore3");
-                options.ClusterConfiguration.Globals.RegisterStorageProvider<Orleans.Storage.ShardedStorageProvider>("ShardedAzureStore");
-
-                //< Provider Name = "AzureStore1" />
-                //< Provider Name = "AzureStore2" />
-                //< Provider Name = "AzureStore3" />
-                //IProviderConfiguration providerConfig;
-                //if (options.ClusterConfiguration.Globals.TryGetProviderConfiguration("Orleans.Storage.ShardedStorageProvider", "ShardedAzureStore", out providerConfig))
-                //{
-                //    var providerCategoriess = options.ClusterConfiguration.Globals.ProviderConfigurations;
-
-                //    var providers = providerCategoriess.SelectMany(o => o.Value.Providers);
-
-                //    IProvider provider1 = GetNamedProviderForShardedProvider(providers, "AzureStore1");
-                //    IProvider provider2 = GetNamedProviderForShardedProvider(providers, "AzureStore2");
-                //    IProvider provider3 = GetNamedProviderForShardedProvider(providers, "AzureStore3");
-                //    providerConfig.Children.Add(provider1);
-                //    providerConfig.Children.Add(provider2);
-                //    providerConfig.Children.Add(provider3);
-                //}
+                options.ClusterConfiguration.AddShardedStorageProvider("ShardedAzureStore", new string[] { "AzureStore1", "AzureStore2", "AzureStore3" });
 
                 return new TestCluster(options);
             }
-
-            private static IProvider GetNamedProviderForShardedProvider(IEnumerable<KeyValuePair<string, IProviderConfiguration>> providers, string providerName)
-            {
-                var ddbStore1 = providers.Where(o => o.Key.Equals(providerName)).Select(o => o.Value);
-
-                var pm = ddbStore1.FirstOrDefault();
-
-                //The provider manager is null at this point
-                // need to find a different way to give the shardedstorageprovider the child providers
-                var provider = ((ProviderConfiguration) pm).ProviderManager.GetProvider(providerName);
-                return provider;
-            }
-
-
         }
 
         public PersistenceGrainTests_AzureBlobStore(ITestOutputHelper output, Fixture fixture) : base(output, fixture)

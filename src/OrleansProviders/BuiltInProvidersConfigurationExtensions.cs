@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Orleans.Storage;
+using System.Linq;
 
 namespace Orleans.Runtime.Configuration
 {
@@ -45,12 +46,38 @@ namespace Orleans.Runtime.Configuration
         {
             if (string.IsNullOrWhiteSpace(providerName)) throw new ArgumentNullException(nameof(providerName));
 
-            var properties = new Dictionary<string, string>
-            {
-                { MemoryStorage.NumStorageGrainsPropertyName, numStorageGrains.ToString() },
-            };
+            var properties = new Dictionary<string, string>();
+            //{
+            //    { MemoryStorage.NumStorageGrainsPropertyName, numStorageGrains.ToString() },
+            //};
+
+
+            IEnumerable<Orleans.Providers.IProviderConfiguration> provConfigsPre = config.Globals.GetAllProviderConfigurations();
+
 
             config.Globals.RegisterStorageProvider<ShardedStorageProvider>(providerName, properties);
+
+            IEnumerable<Orleans.Providers.IProviderConfiguration> provConfigsPost = config.Globals.GetAllProviderConfigurations();
+
+            Orleans.Providers.IProviderConfiguration shardedStorageConfig = null;
+            if (config.Globals.TryGetProviderConfiguration(typeof(ShardedStorageProvider).FullName, providerName, out shardedStorageConfig))
+            {
+                //var config = new ProviderConfiguration();
+                //config.Load(subElement, alreadyLoaded, nsManager);
+                //add(config);
+
+                var matchedProviderConfigurationList = provConfigsPre.Where(c => collectionOfShardProviders.Contains(c.Name)).Select(a => a);
+
+                foreach (var providerConfig in matchedProviderConfigurationList)
+                {
+                    ((ProviderConfiguration) shardedStorageConfig).ChildConfigurations.Add(providerConfig);
+                }
+            }
+            else
+            {
+                throw new Exception("this should not happen");
+            }
+
         }
 
 

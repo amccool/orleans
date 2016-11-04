@@ -29,5 +29,30 @@ namespace Orleans.Runtime.Configuration
 
             config.Globals.RegisterStorageProvider<MemoryStorage>(providerName, properties);
         }
+
+
+        /// <summary>
+        /// Adds a storage provider of type <see cref="ShardedStorageProvider"/>
+        /// </summary>
+        /// <param name="config">The cluster configuration object to add provider to.</param>
+        /// <param name="providerName">The provider name.</param>
+        /// <param name="numStorageGrains">The number of storage grains to use.</param>
+        /// <param name="collectionOfShardProviders">The names of the Providers in the shard collection</param>
+        public static void AddShardedStorageProvider(
+            this ClusterConfiguration config,
+            string providerName,
+            IEnumerable<string> collectionOfShardProviders)
+        {
+            if (string.IsNullOrWhiteSpace(providerName)) throw new ArgumentNullException(nameof(providerName));
+
+            var properties = new Dictionary<string, string>
+            {
+                { MemoryStorage.NumStorageGrainsPropertyName, numStorageGrains.ToString() },
+            };
+
+            config.Globals.RegisterStorageProvider<ShardedStorageProvider>(providerName, properties);
+        }
+
+
     }
 }

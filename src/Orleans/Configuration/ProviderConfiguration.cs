@@ -15,7 +15,7 @@ namespace Orleans.Runtime.Configuration
     public class ProviderConfiguration : IProviderConfiguration
     {
         private IDictionary<string, string> properties;
-        private readonly IList<ProviderConfiguration> childConfigurations = new List<ProviderConfiguration>();
+        private readonly IList<IProviderConfiguration> childConfigurations = new List<IProviderConfiguration>();
         [NonSerialized]
         private IList<IProvider> childProviders;
         [NonSerialized]
@@ -24,6 +24,11 @@ namespace Orleans.Runtime.Configuration
         public string Type { get; private set; }
         public string Name { get; private set; }
         public IProviderManager ProviderManager {get { return providerManager; } }
+
+        /// <summary>
+        /// Used to Populate the ShardedStorageProvider
+        /// </summary>
+        public IList<IProviderConfiguration> ChildConfigurations { get { return childConfigurations; } }
 
 
         private ReadOnlyDictionary<string, string> readonlyCopyOfProperties;
@@ -133,7 +138,7 @@ namespace Orleans.Runtime.Configuration
         {
             this.providerManager = manager;
             foreach (var child in childConfigurations)
-                child.SetProviderManager(manager);
+                ((ProviderConfiguration)child).SetProviderManager(manager);
         }
 
         public void SetProperty(string key, string val)
@@ -197,6 +202,7 @@ namespace Orleans.Runtime.Configuration
         public const string BOOTSTRAP_PROVIDER_CATEGORY_NAME = "Bootstrap";
         public const string STORAGE_PROVIDER_CATEGORY_NAME = "Storage";
         public const string STREAM_PROVIDER_CATEGORY_NAME = "Stream";
+        public const string STATISTICS_PROVIDER_CATEGORY_NAME = "StatisticsProviders";
 
         public string Name { get; set; }
         public IDictionary<string, IProviderConfiguration> Providers { get; set; }

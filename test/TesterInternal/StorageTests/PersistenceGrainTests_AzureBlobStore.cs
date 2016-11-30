@@ -9,6 +9,11 @@ using Orleans.TestingHost;
 using Tester;
 using Xunit;
 using Xunit.Abstractions;
+using Orleans.Runtime.Configuration;
+using System.Collections.Generic;
+using Orleans.Providers;
+using System.Linq;
+using TestExtensions;
 
 // ReSharper disable RedundantAssignment
 // ReSharper disable UnusedVariable
@@ -21,22 +26,31 @@ namespace UnitTests.StorageTests
     /// </summary>
     public class PersistenceGrainTests_AzureBlobStore : Base_PersistenceGrainTests_AzureStore, IClassFixture<PersistenceGrainTests_AzureBlobStore.Fixture>
     {
-        public class Fixture : BaseClusterFixture
+        public class Fixture : BaseTestClusterFixture
         {
-            protected override TestingSiloHost CreateClusterHost()
+            protected override TestCluster CreateTestCluster()
             {
-                TestUtils.CheckForAzureStorage();
-
                 Guid serviceId = Guid.NewGuid();
-                return new TestingSiloHost(new TestingSiloOptions
-                {
-                    SiloConfigFile = new FileInfo("Config_AzureBlobStorage.xml"),
-                    StartSecondary = false,
-                    AdjustConfig = config =>
-                    {
-                        config.Globals.ServiceId = serviceId;
-                    }
-                });
+                var options = new TestClusterOptions(initialSilosCount: 1);
+
+                options.ClusterConfiguration.Globals.ServiceId = serviceId;
+
+                options.ClusterConfiguration.ApplyToAllNodes(n => n.MaxActiveThreads = 0);
+                options.ClusterConfiguration.Globals.MaxResendCount = 0;
+
+                options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.MockStorageProvider>("test1");
+                options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.MockStorageProvider>("test2", new Dictionary<string, string> { { "Config1", "1" }, { "Config2", "2" } });
+                options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.ErrorInjectionStorageProvider>("ErrorInjector");
+                options.ClusterConfiguration.Globals.RegisterStorageProvider<UnitTests.StorageTests.MockStorageProvider>("lowercase");
+
+                options.ClusterConfiguration.AddMemoryStorageProvider("MemoryStore");
+                options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore");
+                options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore1");
+                options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore2");
+                options.ClusterConfiguration.AddAzureBlobStorageProvider("AzureStore3");
+                options.ClusterConfiguration.AddShardedStorageProvider("ShardedAzureStore", new string[] { "AzureStore1", "AzureStore2", "AzureStore3" });
+
+                return new TestCluster(options);
             }
         }
 

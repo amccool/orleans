@@ -492,7 +492,7 @@ namespace Orleans.Runtime
             SiloProviderRuntime.Initialize(GlobalConfig, SiloAddress.ToLongString(), grainFactory, Services);
             SiloProviderRuntime.Instance.StreamingInitialize();
             runtimeClient.CurrentStreamProviderRuntime = SiloProviderRuntime.Instance;
-            statisticsProviderManager = new StatisticsProviderManager("Statistics", SiloProviderRuntime.Instance);
+            statisticsProviderManager = new StatisticsProviderManager(ProviderCategoryConfiguration.STATISTICS_PROVIDER_CATEGORY_NAME, SiloProviderRuntime.Instance);
             string statsProviderName =  statisticsProviderManager.LoadProvider(GlobalConfig.ProviderConfigurations)
                 .WaitForResultWithThrow(initTimeout);
             if (statsProviderName != null)

@@ -11,6 +11,7 @@ using Orleans.Concurrency;
 using Orleans.Runtime;
 using Orleans.Runtime.Configuration;
 using Orleans.Serialization;
+using TestExtensions;
 using UnitTests.GrainInterfaces;
 using UnitTests.Grains;
 using Xunit;
@@ -527,7 +528,7 @@ namespace UnitTests.Serialization
             { }
 
             [CopierMethod]
-            static private object Copy(object input)
+            static private object Copy(object input, ICopyContext context)
             {
                 return input;
             }
@@ -1024,17 +1025,17 @@ namespace UnitTests.Serialization
 
             public bool IsSupportedType(Type itemType) => false;
 
-            public object DeepCopy(object source)
+            public object DeepCopy(object source, ICopyContext context)
             {
                 throw new NotSupportedException();
             }
 
-            public void Serialize(object item, BinaryTokenStreamWriter writer, Type expectedType)
+            public void Serialize(object item, ISerializationContext context, Type expectedType)
             {
                 throw new NotSupportedException();
             }
 
-            public object Deserialize(Type expectedType, BinaryTokenStreamReader reader)
+            public object Deserialize(Type expectedType, IDeserializationContext context)
             {
                 throw new NotSupportedException();
             }

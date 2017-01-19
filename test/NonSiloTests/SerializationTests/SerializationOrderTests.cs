@@ -1,3 +1,5 @@
+using TestExtensions;
+
 namespace UnitTests.Serialization
 {
     using System;
@@ -92,18 +94,18 @@ namespace UnitTests.Serialization
                 return SupportedTypes == null ? false : SupportedTypes.Contains(itemType);
             }
 
-            public object DeepCopy(object source)
+            public object DeepCopy(object source, ICopyContext context)
             {
                 DeepCopyCalled = true;
                 return source;
             }
 
-            public void Serialize(object item, BinaryTokenStreamWriter writer, Type expectedType)
+            public void Serialize(object item, ISerializationContext context, Type expectedType)
             {
                 SerializeCalled = true;
             }
 
-            public object Deserialize(Type expectedType, BinaryTokenStreamReader reader)
+            public object Deserialize(Type expectedType, IDeserializationContext context)
             {
                 DeserializeCalled = true;
                 return null;
@@ -137,18 +139,18 @@ namespace UnitTests.Serialization
                 return SupportedTypes == null ? false : SupportedTypes.Contains(itemType);
             }
 
-            public object DeepCopy(object source)
+            public object DeepCopy(object source, ICopyContext context)
             {
                 DeepCopyCalled = true;
                 return source;
             }
 
-            public void Serialize(object item, BinaryTokenStreamWriter writer, Type expectedType)
+            public void Serialize(object item, ISerializationContext context, Type expectedType)
             {
                 SerializeCalled = true;
             }
 
-            public object Deserialize(Type expectedType, BinaryTokenStreamReader reader)
+            public object Deserialize(Type expectedType, IDeserializationContext context)
             {
                 DeserializeCalled = true;
                 return null;
@@ -171,20 +173,20 @@ namespace UnitTests.Serialization
             }
 
             [CopierMethod]
-            private static object Copy(object input)
+            private static object Copy(object input, ICopyContext context)
             {
                 CopyWasCalled = true;
                 return input;
             }
 
             [SerializerMethod]
-            private static void Serialize(object input, BinaryTokenStreamWriter stream, Type expected)
+            private static void Serialize(object input, ISerializationContext context, Type expected)
             {
                 SerializeWasCalled = true;
             }
 
             [DeserializerMethod]
-            private static object Deserialize(Type expected, BinaryTokenStreamReader stream)
+            private static object Deserialize(Type expected, IDeserializationContext context)
             {
                 DeserializeWasCalled = true;
                 return null;

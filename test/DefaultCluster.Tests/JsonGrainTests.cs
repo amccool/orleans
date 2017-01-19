@@ -1,13 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Orleans;
 using Orleans.CodeGeneration;
 using Orleans.Serialization;
 using TestExtensions;
 using UnitTests.GrainInterfaces;
 using Xunit;
 using System;
-using Newtonsoft.Json;
 
 namespace DefaultCluster.Tests.General
 {
@@ -16,11 +14,15 @@ namespace DefaultCluster.Tests.General
     /// </summary>
     public class JsonGrainTests : HostedTestClusterEnsureDefaultStarted
     {
+        public JsonGrainTests(DefaultClusterFixture fixture) : base(fixture)
+        {
+        }
+
         [Fact, TestCategory("BVT"), TestCategory("JSON"), TestCategory("GetGrain")]
         public async Task JSON_GetGrain()
         {
             int id = random.Next();
-            var grain = GrainClient.GrainFactory.GetGrain<IJsonEchoGrain>(id);
+            var grain = this.GrainFactory.GetGrain<IJsonEchoGrain>(id);
             await grain.Ping();
         }
 
@@ -28,7 +30,7 @@ namespace DefaultCluster.Tests.General
         public async Task JSON_EchoJson()
         {
             int id = random.Next();
-            var grain = GrainClient.GrainFactory.GetGrain<IJsonEchoGrain>(id);
+            var grain = this.GrainFactory.GetGrain<IJsonEchoGrain>(id);
 
             // Compare to: SerializationTests_JObject_Example1
             const string json = 
@@ -46,37 +48,30 @@ namespace DefaultCluster.Tests.General
             Assert.Equal(input.ToString(), output.ToString());
         }
 
-        [RegisterSerializer]
+        [Serializer(typeof(JObject))]
         public class JObjectSerializationExample1
         {
-            static JObjectSerializationExample1()
-            {
-                Register();
-            }
-
-            public static object DeepCopier(object original)
+            [CopierMethod]
+            public static object DeepCopier(object original, ICopyContext context)
             {
                 // I assume JObject is immutable, so no need to deep copy.
                 // Alternatively, can copy via JObject.ToString and JObject.Parse().
                 return original;
             }
 
-            public static void Serializer(object untypedInput, BinaryTokenStreamWriter stream, Type expected)
+            [SerializerMethod]
+            public static void Serializer(object untypedInput, ISerializationContext context, Type expected)
             {
-                var input = (JObject)(untypedInput);
+                var input = (JObject)untypedInput;
                 string str = input.ToString();
-                SerializationManager.Serialize(str, stream);
+                SerializationManager.Serialize(str, context.StreamWriter);
             }
 
-            public static object Deserializer(Type expected, BinaryTokenStreamReader stream)
+            [DeserializerMethod]
+            public static object Deserializer(Type expected, IDeserializationContext context)
             {
-                var str = (string)(SerializationManager.Deserialize(typeof(string), stream));
+                var str = (string)SerializationManager.Deserialize(typeof(string), context.StreamReader);
                 return JObject.Parse(str);
-            }
-
-            public static void Register()
-            {
-                SerializationManager.Register(typeof(JObject), DeepCopier, Serializer, Deserializer);
             }
         }
     }

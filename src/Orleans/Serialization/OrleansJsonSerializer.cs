@@ -41,7 +41,7 @@ namespace Orleans.Serialization
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-#if !NETSTANDARD_TODO
+#if !NETSTANDARD2_0
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
 
                 // Types such as GrainReference need context during deserialization, so provide that context now.
@@ -74,7 +74,7 @@ namespace Orleans.Serialization
                 bool useFullAssemblyNames;
                 if (bool.TryParse(config.Properties[UseFullAssemblyNamesProperty], out useFullAssemblyNames) && useFullAssemblyNames)
                 {
-#if !NETSTANDARD_TODO
+#if !NETSTANDARD2_0
                     settings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
 #endif
                 }

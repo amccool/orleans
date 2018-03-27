@@ -35,7 +35,11 @@ namespace Orleans.Runtime
 
         public long AvailablePhysicalMemory
         {
+#if !NETSTANDARD2_0
             get { return runtimeStats.AvailableMemory; }
+#else
+            get { return 0; }
+#endif
         }
 
         public long MemoryUsage
@@ -120,7 +124,7 @@ namespace Orleans.Runtime
             }
         }
 
-        #endregion
+#endregion
 
         public void Dispose()
         {

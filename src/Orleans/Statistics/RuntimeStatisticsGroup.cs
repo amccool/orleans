@@ -1,8 +1,11 @@
-﻿#define LOG_MEMORY_PERF_COUNTERS
+﻿//#define LOG_MEMORY_PERF_COUNTERS
 
 using System;
 using System.Diagnostics;
+
+#if !NETSTANDARD2_0
 using System.Management;
+#endif
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +17,7 @@ namespace Orleans.Runtime
         private static readonly Logger logger = LogManager.GetLogger("RuntimeStatisticsGroup", LoggerType.Runtime);
         private const float KB = 1024f;
 
+#if !NETSTANDARD2_0
         private PerformanceCounter cpuCounterPF;
         private PerformanceCounter availableMemoryCounterPF;
 #if LOG_MEMORY_PERF_COUNTERS
@@ -24,6 +28,8 @@ namespace Orleans.Runtime
         private PerformanceCounter numberOfInducedGCsPF;
         private PerformanceCounter largeObjectHeapSizePF;
         private PerformanceCounter promotedFinalizationMemoryFromGen0PF;
+#endif
+
 #endif
         private SafeTimer cpuUsageTimer;
         private readonly TimeSpan CPU_CHECK_PERIOD = TimeSpan.FromSeconds(5);
@@ -37,10 +43,12 @@ namespace Orleans.Runtime
         ///
         public long TotalPhysicalMemory { get; private set; }
 
+#if !NETSTANDARD2_0
         ///
         /// <summary>Amount of memory available to processes running on the machine</summary>
         ///
         public long AvailableMemory { get { return availableMemoryCounterPF != null ? Convert.ToInt64(availableMemoryCounterPF.NextValue()) : 0; } }
+#endif
 
         public float CpuUsage { get; private set; }
 
@@ -86,6 +94,7 @@ namespace Orleans.Runtime
         {
             try
             {
+#if !NETSTANDARD2_0
                 cpuCounterPF = new PerformanceCounter("Processor", "% Processor Time", "_Total", true);
                 availableMemoryCounterPF = new PerformanceCounter("Memory", "Available Bytes", true);
 #if LOG_MEMORY_PERF_COUNTERS
@@ -102,8 +111,9 @@ namespace Orleans.Runtime
                 largeObjectHeapSizePF = new PerformanceCounter(".NET CLR Memory", "Large Object Heap size", thisProcess, true);
                 promotedFinalizationMemoryFromGen0PF = new PerformanceCounter(".NET CLR Memory", "Promoted Finalization-Memory from Gen 0", thisProcess, true);
 #endif
+#endif
 
-#if !(NETSTANDARD || __MonoCS__)
+#if !(NETSTANDARD2_0 || NETSTANDARD || __MonoCS__)
                 //.NET on Windows without mono
                 const string Query = "SELECT Capacity FROM Win32_PhysicalMemory";
                 var searcher = new ManagementObjectSearcher(Query);
@@ -139,6 +149,7 @@ namespace Orleans.Runtime
                     "CPU & Memory perf counters did not initialize correctly - try repairing Windows perf counter config on this machine with 'lodctr /r' command");
             }
 
+#if !NETSTANDARD2_0
             if (cpuCounterPF != null)
             {
                 cpuUsageTimer = new SafeTimer(CheckCpuUsage, null, CPU_CHECK_PERIOD, CPU_CHECK_PERIOD);
@@ -156,6 +167,7 @@ namespace Orleans.Runtime
                 // Can sometimes get exception accessing CPU Usage counter for first time in some runtime environments
                 CpuUsage = 0;
             }
+#endif
 
             FloatValueStatistic.FindOrCreate(StatisticNames.RUNTIME_CPUUSAGE, () => CpuUsage);
             IntValueStatistic.FindOrCreate(StatisticNames.RUNTIME_GC_TOTALMEMORYKB, () => (long)((MemoryUsage + KB - 1.0) / KB)); // Round up
@@ -219,6 +231,7 @@ namespace Orleans.Runtime
 
         private void CheckCpuUsage(object m)
         {
+#if !NETSTANDARD2_0
             if (cpuCounterPF != null)
             {
                 var currentUsage = cpuCounterPF.NextValue();
@@ -229,6 +242,7 @@ namespace Orleans.Runtime
             {
                 CpuUsage = 0;
             }
+#endif
         }
 
         public void Stop()
@@ -240,6 +254,7 @@ namespace Orleans.Runtime
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed")]
         public void Dispose()
         {
+#if !NETSTANDARD2_0
             cpuCounterPF?.Dispose();
             availableMemoryCounterPF?.Dispose();
 
@@ -254,6 +269,7 @@ namespace Orleans.Runtime
             numberOfInducedGCsPF?.Dispose();
             largeObjectHeapSizePF?.Dispose();
             promotedFinalizationMemoryFromGen0PF?.Dispose();
+#endif
             cpuUsageTimer?.Dispose();
         }
     }

@@ -206,7 +206,7 @@ namespace Orleans.Runtime
 
         private void TrackContextSwitches()
         {
-#if !NETSTANDARD_TODO
+#if !NETSTANDARD2_0
             // TODO: this temporary exclusion should be resolved by #2147
             PerformanceCounterCategory allThreadsWithPerformanceCounters = new PerformanceCounterCategory("Thread");
             PerformanceCounter[] performanceCountersForThisThread = null;

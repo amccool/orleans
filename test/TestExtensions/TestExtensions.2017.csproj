@@ -19,6 +19,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Orleans\Orleans.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansProviders\OrleansProviders.2017.csproj" />
-    <ProjectReference Include="..\..\src\OrleansTestingHost\OrleansTestingHost.2017.csproj" />
   </ItemGroup>
 </Project>

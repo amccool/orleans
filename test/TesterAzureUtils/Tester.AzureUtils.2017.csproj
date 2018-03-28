@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrleansAzureUtils\OrleansAzureUtils.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansProviders\OrleansProviders.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansRuntime\OrleansRuntime.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansTestingHost\OrleansTestingHost.2017.csproj" />

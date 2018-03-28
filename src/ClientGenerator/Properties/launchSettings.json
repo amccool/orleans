@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ClientGenerator.2017": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Users\\amccool\\Source\\Repos\\orleans\\src\\Orleans\\obj\\Debug\\netstandard2.0\\Orleans.orleans.g.cs"
+    }
+  }
+}

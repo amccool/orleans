@@ -10,7 +10,6 @@
     <ProjectReference Include="..\..\src\Orleans\Orleans.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansProviders\OrleansProviders.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansSQLUtils\OrleansSQLUtils.2017.csproj" />
-    <ProjectReference Include="..\..\src\OrleansEventSourcing\OrleansEventSourcing.2017.csproj" />
     <ProjectReference Include="..\TestGrainInterfaces\TestGrainInterfaces.2017.csproj" />
     <ProjectReference Include="..\TestInterfaces\TestInterfaces.2017.csproj" />
   </ItemGroup>

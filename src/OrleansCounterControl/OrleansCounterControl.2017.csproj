@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Orleans\Orleans.2017.csproj" />
     <ProjectReference Include="..\OrleansRuntime\OrleansRuntime.2017.csproj" />
-    <ProjectReference Include="..\OrleansTelemetryConsumers.Counters\OrleansTelemetryConsumers.Counters.2017.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="app.manifest">

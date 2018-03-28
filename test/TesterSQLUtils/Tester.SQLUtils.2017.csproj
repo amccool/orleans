@@ -20,7 +20,6 @@
     <ProjectReference Include="..\..\src\OrleansSQLUtils\OrleansSQLUtils.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansProviders\OrleansProviders.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansRuntime\OrleansRuntime.2017.csproj" />
-    <ProjectReference Include="..\..\src\OrleansTestingHost\OrleansTestingHost.2017.csproj" />
     <ProjectReference Include="..\..\src\Orleans\Orleans.2017.csproj" />
     <ProjectReference Include="..\TesterInternal\TesterInternal.2017.csproj" />
     <ProjectReference Include="..\Tester\Tester.2017.csproj" />

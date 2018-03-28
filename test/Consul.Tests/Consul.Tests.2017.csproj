@@ -14,7 +14,6 @@
     <PackageReference Include="FluentAssertions" Version="4.18.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrleansConsulUtils\OrleansConsulUtils.2017.csproj" />
     <ProjectReference Include="..\..\src\OrleansTestingHost\OrleansTestingHost.2017.csproj" />
     <ProjectReference Include="..\..\src\Orleans\Orleans.2017.csproj" />
     <ProjectReference Include="..\TesterInternal\TesterInternal.2017.csproj" />

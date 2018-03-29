@@ -32,6 +32,10 @@
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.5.0" />
   </ItemGroup>
+  
+  
+  
+
   <PropertyGroup>
     <OrleansBootstrapSteps>
       LogBuildProperties;
@@ -41,7 +45,7 @@
   <Target Name="OrleansBootstrap" AfterTargets="BeforeCompile" DependsOnTargets="$(OrleansBootstrapSteps)" Condition="'$(Bootstrap)' != 'true'" />
   <Target Name="LogBuildProperties">
     <Message Importance="high" Text="[Build Properties]" />
-    <!-- Show values of some useful properties -->
+     <!-- Show values of some useful properties -->
     <Message Importance="high" Text="TeamProject=$(TeamProject)&#xD;&#xA;SolutionRoot=$(SolutionRoot)&#xD;&#xA;SourcesDirectory=$(SourcesDirectory)&#xD;&#xA;BinariesDirectory=$(BinariesDirectory)&#xD;&#xA;BinariesRoot=$(BinariesRoot)&#xD;&#xA;BuildDirectory=$(BuildDirectory)&#xD;&#xA;BuildProjectFolderPath=$(BuildProjectFolderPath)&#xD;&#xA;MSBuildProjectDirectory=$(MSBuildProjectDirectory)&#xD;&#xA;OutputPath=$(OutputPath)&#xD;&#xA;OutDir=$(OutDir)&#xD;&#xA;DropLocation=$(DropLocation)&#xD;&#xA;PackagesDirectory=$(PackagesDirectory)&#xD;&#xA;BuildNumber=$(BuildNumber)&#xD;&#xA;MSBuildForwardPropertiesFromChild=$(MSBuildForwardPropertiesFromChild)&#xD;&#xA;BuildingInsideVisualStudio=$(BuildingInsideVisualStudio)&#xD;&#xA;IsDesktopBuild=$(IsDesktopBuild)" />
   </Target>
   <Target Name="OrleansDllBootstrapUsingCodeGen" Inputs="@(ReferencePath)" Outputs="$(IntermediateOutputPath)$(TargetName).orleans.g.cs" Condition="'$(Bootstrap)' != 'true'">
@@ -52,15 +56,18 @@
       <ExcludeCodeGen>$(DefineConstants);EXCLUDE_CODEGEN;ORLEANS_BOOTSTRAP</ExcludeCodeGen>
     </PropertyGroup>
     <Message Text="[OrleansDllBootstrapUsingCodeGen] - OutputPath: $(BootstrapOutputPath)" Importance="high" />
-    <!-- Compile code generator -->
-    <MSBuild Projects="$(ProjectDir)..\ClientGenerator\BootstrapCodegen.2017.proj" Properties="BootstrapOutputPath=$(BootstrapOutputPath);Bootstrap=true" Targets="Build" UnloadProjectsOnCompletion="true" UseResultsCache="false" BuildInParallel="true" />
-    <!-- Finally invoke code generator on the recently built Orleans.dll -->
+     <!-- Compile code generator --> 
+    <MSBuild Projects="$(ProjectDir)..\ClientGenerator\BootstrapCodegen.2017.proj" 
+             Properties="BootstrapOutputPath=$(BootstrapOutputPath);Bootstrap=true" 
+             Targets="Build" UnloadProjectsOnCompletion="true" 
+             UseResultsCache="false" BuildInParallel="true" />
+     <!-- Finally invoke code generator on the recently built Orleans.dll --> 
     <Message Text="[OrleansDllBootstrapUsingCodeGen] - Building ClientGenerator finished" Importance="high" />
   </Target>
-  <!-- Begin Orleans: Without these lines the project won't build properly -->
-  <!-- Set path to ClientGenerator.exe -->
+   <!-- Begin Orleans: Without these lines the project won't build properly --> 
+   <!-- Set path to ClientGenerator.exe --> 
   <PropertyGroup>
-    <!-- Visual Studio or MsBuild .sln build -->
+     <!-- Visual Studio or MsBuild .sln build --> 
     <OrleansReferencesBase>$(ProjectDir)..\Bootstrap\</OrleansReferencesBase>
   </PropertyGroup>
   <Import Project="$(ProjectDir)..\Orleans.SDK.targets" Condition="'$(Bootstrap)' != 'true'" />
